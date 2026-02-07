@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>KRC Bussines</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+}
+
+header {
+    background: #ffe600;
+    padding: 15px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.search-box {
+    padding: 15px;
+    background: white;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+}
+
+.products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+    padding: 15px;
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.slider {
+    position: relative;
+    cursor: pointer;
+}
+
+.slider img {
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+}
+
+.arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.6);
+    color: white;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.left { left: 10px; }
+.right { right: 10px; }
+
+.info {
+    padding: 12px;
+}
+
+.price {
+    color: green;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.whatsapp {
+    display: block;
+    margin-top: 10px;
+    background: #25D366;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* ===== MODAL ===== */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal img {
+    max-width: 90%;
+    max-height: 80%;
+}
+
+.modal .close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+.modal .arrow {
+    font-size: 30px;
+}
+</style>
+</head>
+
+<body>
+
+<header>KRC Bussines</header>
+
+<div class="search-box">
+    <input type="text" id="search" placeholder="Buscar remeras, camperas, jeans..." style="display:none">
+</div>
+
+<div class="products" id="productList"></div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+    <span class="close" onclick="closeModal()">✕</span>
+    <div class="arrow left" onclick="modalChange(-1)">‹</div>
+    <img id="modalImg">
+    <div class="arrow right" onclick="modalChange(1)">›</div>
+</div>
+
+<script>
+// ================= PRODUCTOS =================
+const products = [
+{
+    name: "Pantalón Zara",
+    category: "pantalon",
+    price: "$900",
+    description: "pantalón blanco Zara, Talle 6 (116cm).",
+    images: [
+        "images/pantalon1.jpeg",
+        "images/pantalon2.jpeg",
+        "images/pantalon29.jpeg"
+    ],
+    current: 0
+},
+{
+    name: "Jean OshKosh",
+    category: "vaquero",
+    price: "$2500",
+    description: "Jean negro OshKosh, Talle X",
+    images: [
+        "images/pantalon3.jpeg",
+        "images/pantalon4.jpeg",
+        "images/pantalon5.jpeg"
+    ],
+    current: 0
+},
+{
+    name: "Jean Benetton",
+    category: "vaquero",
+    price: "$2500",
+    description: "Jean blanco de United Color of Benetton, Talle X.",
+    images: [
+        "images/pantalon6.jpeg",
+        "images/pantalon7.jpeg",
+        "images/pantalon8.jpeg"
+    ],
+    current: 0
+
+},
+{
+    name: "Jean",
+    category: "vaquero",
+    price: "$2500",
+    description: " Jean azul, Talle X.",
+    images: [
+        "images/pantalon9.jpeg",
+        "images/pantalon10.jpeg"
+        
+    ],
+    current: 0
+
+},
+{
+    name: "Jean Zara",
+    category: "vaquero",
+    price: "$2500",
+    description: "Jean azul Zara, Talle 11-12 (152cm).",
+    images: [
+        "images/pantalon11.jpeg",
+        "images/pantalon12.jpeg",
+        "images/pantalon13.jpeg"
+    ],
+    current: 0
+
+},
+{
+    name: "Jean",
+    category: "vaquero",
+    price: "$2500",
+    description: "Jean azul, Talle X.",
+    images: [
+        "images/pantalon14.jpeg",
+        "images/pantalon15.jpeg"
+        
+    ],
+    current: 0
+
+},
+{
+    name: "Jean Zara",
+    category: "vaquero",
+    price: "$2500",
+    description: "Jean azul Zara, Talle 10 (140cm).",
+    images: [
+        "images/pantalon16.jpeg",
+        "images/pantalon17.jpeg",
+        "images/pantalon18.jpeg"
+    ],
+    current: 0
+
+},
+{
+    name: "Jean The Children's Place",
+    category: "vaquero",
+    price: "$2500",
+    description: "Jean azul de The Children's Place, Talle 7.",
+    images: [
+        "images/pantalon19.jpeg",
+        "images/pantalon20.jpeg",
+        "images/pantalon21.jpeg"
+    ],
+    current: 0
+
+},
+{
+    name: "Jean",
+    category: "vaquero",
+    price: "$2500",
+    description: "Jean azul, Talle X.",
+    images: [
+        "images/pantalon22.jpeg",
+        "images/pantalon23.jpeg"
+       
+    ],
+    current: 0
+
+},
+{
+    name: "Jean The Children's Place",
+    category: "vaquero",
+    price: "$2500",
+    description: "Jean azul de The Children's Place, Talle 6.",
+    images: [
+        "images/pantalon24.jpeg",
+        "images/pantalon25.jpeg",
+       "images/pantalon26.jpeg"
+    ],
+    current: 0
+
+},
+{
+    name: "Bermuda Lino",
+    category: "Vermuda",
+    price: "$2500",
+    description: "Vermuda roja de Lino, Talle 8.",
+    images: [
+        "images/short1.jpeg",
+        "images/short2.jpeg",
+       "images/short3.jpeg"
+    ],
+    current: 0
+
+},
+{
+    name: "Falda Bermuda Zara",
+    category: "Falda",
+    price: "$2500",
+    description: "Falda bermuda azul Zara, Talle 7 (122cm).",
+    images: [
+        "images/short4.jpeg",
+        "images/short5.jpeg",
+       "images/short6.jpeg"
+    ],
+    current: 0
+
+},
+{
+    name: "Remera The Children's Place",
+    category: "remera",
+    price: "$2500",
+    description: "Remera celeste de manga corta de The Children's Place, Talle X.",
+    images: [
+        "images/remeras1.jpeg",
+        "images/remeras2.jpeg"
+      
+    ],
+    current: 0
+
+},
+{
+    name: "Campera Carter's",
+    category: "campera",
+    price: "$2500",
+    description: "Campera azul de Carter's, Talle 5.",
+    images: [
+        "images/campera1.jpeg",
+        "images/campera2.jpeg"
+      
+    ],
+    current: 0
+
+},
+{
+    name: "Campera Zara",
+    category: "campera",
+    price: "$2500",
+    description: "Campera blanca Zara, Talle 6 (122cm).",
+    images: [
+        "images/campera3.jpeg",
+        "images/campera4.jpeg"
+      
+    ],
+    current: 0
+
+},
+{
+    name: "Remera The Children's Place",
+    category: "campera",
+    price: "$2500",
+    description: "Remera celeste de The Children's Place, manga larga, Talle X.",
+    images: [
+        "images/remeras3.jpeg",
+        "images/remeras4.jpeg"
+      
+    ],
+    current: 0
+
+},
+{
+    name: "Remera Benetton",
+    category: "campera",
+    price: "$2500",
+    description: "Remera blanca de United Colors of Benetton para niño, manga corta, Talle X.",
+    images: [
+        "images/remeras5.jpeg",
+        "images/remeras6.jpeg"
+      
+    ],
+    current: 0
+
+},
+{
+    name: "Remera Hering Kids",
+    category: "campera",
+    price: "$2500",
+    description: "Remera rayada de Hering Kids, manga corta, Talle 8.",
+    images: [
+        "images/remeras7.jpeg",
+        "images/remeras8.jpeg"
+      
+    ],
+    current: 0
+
+
+},
+{
+    name: "Remera The Children's Place",
+    category: "campera",
+    price: "$2500",
+    description: "Remera naranja de The Children's Place, manga corta, Talle X.",
+    images: [
+        "images/remeras9.jpeg",
+        "images/remeras10.jpeg"
+      
+    ],
+    current: 0
+
+},
+{
+    name: "Remera The Children's Place",
+    category: "campera",
+    price: "$2500",
+    description: "Remera negra de The Children's Place, manga corta, Talle X.",
+    images: [
+        "images/remeras11.jpeg",
+        "images/remeras12.jpeg"
+      
+    ],
+    current: 0
+
+},
+{
+    name: "Remera Nautica",
+    category: "campera",
+    price: "$2500",
+    description: "Remera celeste de Nautica, manga corta, Talle X.",
+    images: [
+        "images/remeras13.jpeg",
+        "images/remeras14.jpeg"
+      
+    ],
+    current: 0
+
+},
+{
+    name: "Remera The Children's Place",
+    category: "campera",
+    price: "$2500",
+    description: "Remera naranja de The Children's Place, manga larga, Talle X.",
+    images: [
+        "images/remeras15.jpeg",
+        "images/remeras16.jpeg"
+      
+    ],
+    current: 0
+
+},
+{
+    name: "Remera The Children's Place",
+    category: "campera",
+    price: "$2500",
+    description: "Remera negra de The Children's Place, manga corta, Talle X.",
+    images: [
+        "images/remeras17.jpeg",
+        "images/remeras18.jpeg"
+      
+    ],
+    current: 0
+
+},
+{
+    name: "Remera The Children's Place",
+    category: "campera",
+    price: "$2500",
+    description: "Remera azul de The Children's Place, manga larga, Talle X.",
+    images: [
+        "images/remeras19.jpeg",
+        "images/remeras20.jpeg"
+      
+    ],
+    current: 0
+},
+{
+    name: "Remera The Children's Place",
+    category: "campera",
+    price: "$2500",
+    description: "Remera negra de The Children's Place, manga corta, Talle X.",
+    images: [
+        "images/remeras21.jpeg",
+        "images/remeras22.jpeg"
+      
+    ],
+    current: 0
+
+},
+{
+    name: "Campera DG Boys",
+    category: "campera",
+    price: "$2500",
+    description: "Campera azul de DG Boys, Talle 6.",
+    images: [
+        "images/campera5.jpeg",
+        "images/campera6.jpeg"
+      
+    ],
+    current: 0
+
+},
+{
+    name: "Campera Carter's",
+    category: "campera",
+    price: "$2500",
+    description: "Campera negra de Carter's, Talle 5.",
+    images: [
+        "images/campera7.jpeg",
+        "images/campera8.jpeg"
+      
+    ],
+    current: 0
+
+},
+{
+    name: "Campera Street Rebel",
+    category: "campera",
+    price: "$2500",
+    description: "Campera de Street Rebel, Talle 10.",
+    images: [
+        "images/campera9.jpeg",
+        "images/campera10.jpeg"
+      
+    ],
+    current: 0
+
+},
+{
+    name: "Pantalón Zara",
+    category: "campera",
+    price: "$2500",
+    description: "Pantalón negro Zara, Talle 7 (122cm).",
+    images: [
+        "images/pantalon27.jpeg",
+        "images/pantalon28.jpeg"
+      
+    ],
+    current: 0
+},
+{
+    name: "Bermuda Mimo & Co",
+    category: "campera",
+    price: "$2500",
+    description: "Vermuda azul de Mimo & Co, Talle 10.",
+    images: [
+        "images/short7.jpeg",
+        "images/short8.jpeg"
+      
+    ],
+    current: 0
+
+},
+{
+    name: "Bermuda Denim.Co",
+    category: "campera",
+    price: "$2500",
+    description: "Vermuda X de Denim.Co, Talle 8-9 (134cm).",
+    images: [
+        "images/short9.jpeg",
+        "images/short10.jpeg",
+        "images/short13.jpeg"
+    ],
+    current: 0
+
+},
+{
+    name: "Bermuda Mimo & Co",
+    category: "campera",
+    price: "$2500",
+    description: "Vermuda beige de Mimo & Co, Talle 10.",
+    images: [
+        "images/short11.jpeg",
+        "images/short12.jpeg"
+
+      
+    ],
+    current: 0
+},
+{
+    name: "Remera Chamanes",
+    category: "campera",
+    price: "$2500",
+    description: "Remera blanca de Chamanes, manga corta, Talle X.",
+    images: [
+        "images/remeras23.jpeg",
+        "images/remeras24.jpeg"
+
+      
+    ],
+    current: 0
+
+},
+{
+    name: "Zapatos OrtoPasso",
+    category: "campera",
+    price: "$2500",
+    description: "Zapatos blanco de OrtoPasso, Talle 27.",
+    images: [
+        "images/zapato1.jpeg",
+        "images/zapato2.jpeg",
+        "images/zapato3.jpeg",
+       "images/zapato4.jpeg"
+    ],
+    current: 0
+
+},
+{
+    name: "Zapatos Zara",
+    category: "campera",
+    price: "$2500",
+    description: "Zapatos dorados Zara, Talle 29.",
+    images: [
+        "images/zapato5.jpeg",
+        "images/zapato6.jpeg",
+        "images/zapato9.jpeg",
+        "images/zapato8.jpeg"
+    ],
+    current: 0
+
+},
+{
+    name: "Botas Zara",
+    category: "campera",
+    price: "$2500",
+    description: "Botas marrones Zara, Talle 29.",
+    images: [
+        "images/zapato10.jpeg",
+        "images/zapato11.jpeg",
+        "images/zapato12.jpeg",
+        "images/zapato13.jpeg"
+    ],
+    current: 0
+
+},
+{
+    name: "Botas Tommy Hilfiger",
+    category: "campera",
+    price: "$2500",
+    description: "Botas negras de Tommy Hilfiger, Talle 29.",
+    images: [
+        "images/zapato14.jpeg",
+        "images/zapato15.jpeg",
+        "images/zapato16.jpeg"
+        
+    ],
+    current: 0
+}
+];
+ 
+
+// ================= BUSCADOR PRO =================
+function normalize(t){
+    return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+}
+
+function scoreProduct(p, s){
+    if(!s) return 1;
+    const text = normalize(p.name+" "+p.category+" "+p.description);
+    return normalize(s).split(" ").reduce((a,w)=>{
+        return a + (text.includes(w) ? 5 : text.includes(w.slice(0,-1)) ? 4 : 0);
+    },0);
+}
+
+// ================= RENDER =================
+function renderProducts(filter=""){
+    const list=document.getElementById("productList");
+    list.innerHTML="";
+
+    products
+    .map(p=>({...p,score:scoreProduct(p,filter)}))
+    .filter(p=>p.score>0)
+    .forEach((p,i)=>{
+        const msg=encodeURIComponent(`Hola, quiero consultar por ${p.name} (${p.price})`);
+        list.innerHTML+=`
+        <div class="card">
+            <div class="slider" onclick="openModal(${i})">
+                <img src="${p.images[p.current]}">
+            </div>
+            <div class="info">
+                <h3>${p.name}</h3>
+                <p>${p.description}</p>
+                <p class="price">${p.price}</p>
+                <a class="whatsapp" href="https://wa.me/59899823132?text=${msg}" target="_blank">
+                    Consultar por WhatsApp
+                </a>
+            </div>
+        </div>`;
+    });
+}
+
+document.getElementById("search").addEventListener("input",e=>{
+    renderProducts(e.target.value);
+});
+
+// ================= MODAL =================
+let modalIndex=0;
+
+function openModal(i){
+    modalIndex=i;
+    document.getElementById("modal").style.display="flex";
+    document.getElementById("modalImg").src=products[i].images[products[i].current];
+}
+
+function closeModal(){
+    document.getElementById("modal").style.display="none";
+}
+
+function modalChange(d){
+    const p=products[modalIndex];
+    p.current+=d;
+    if(p.current<0)p.current=p.images.length-1;
+    if(p.current>=p.images.length)p.current=0;
+    document.getElementById("modalImg").src=p.images[p.current];
+}
+
+renderProducts();
+</script>
+
+<script>
+function closeModal() {
+  document.getElementById("modal").style.display = "none";
+}
+</script>
+
+
+</body>
+</html>
